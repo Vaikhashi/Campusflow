@@ -1,16 +1,48 @@
-# React + Vite
+# CampusFlow
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small app for running college clubs. Club admins create events and hand out tasks, members see what's due, and the principal can see every club and event in one place.
 
-Currently, two official plugins are available:
+Backend is FastAPI with SQLAlchemy. Frontend is React (Vite).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What it does
 
-## React Compiler
+- Sign up and log in with a JWT. Every request carries a role: `CLUB_ADMIN`, `MEMBER` or `PRINCIPAL`.
+- Club admins create events, assign tasks with deadlines, and mark events as completed.
+- Members see their tasks, tick them off, and get a list of deadlines due in the next 7 days.
+- The principal gets read-only views of all clubs and events.
+- `POST /system/run-deadline-check` flags tasks due today as a background task.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Main endpoints
 
-## Expanding the ESLint configuration
+| Method | Path | Who |
+| --- | --- | --- |
+| POST | `/register`, `/login` | anyone |
+| POST | `/events`, `/tasks` | club admin |
+| PUT | `/events/{id}/complete` | club admin |
+| GET | `/my-tasks`, `/notifications/my-deadlines` | logged in |
+| PUT | `/tasks/{id}/complete` | the member it's assigned to |
+| GET | `/principal/clubs`, `/principal/events` | principal |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Running it
+
+Backend:
+
+```bash
+cd backend
+pip install fastapi uvicorn sqlalchemy python-dotenv passlib[bcrypt] python-jose
+# .env needs DATABASE_URL and SECRET_KEY, e.g.
+# DATABASE_URL=sqlite:///./campusflow.db
+uvicorn app.main:app --reload
+```
+
+Frontend (expects the API on `http://127.0.0.1:8000`):
+
+```bash
+npm install
+npm run dev
+```
+
+## Still to do
+
+- The React side only has the login page and an events dashboard so far.
+- Add a `requirements.txt` and tests.
