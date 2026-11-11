@@ -29,7 +29,7 @@ Backend:
 
 ```bash
 cd backend
-pip install fastapi uvicorn sqlalchemy python-dotenv passlib[bcrypt] python-jose
+pip install -r requirements.txt
 # .env needs DATABASE_URL and SECRET_KEY, e.g.
 # DATABASE_URL=sqlite:///./campusflow.db
 uvicorn app.main:app --reload
@@ -45,4 +45,4 @@ npm run dev
 ## Still to do
 
 - The React side only has the login page and an events dashboard so far.
-- Add a `requirements.txt` and tests.
+- Add tests.
